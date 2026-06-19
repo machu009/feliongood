@@ -4,11 +4,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        ink: "#1F2421",
-        chalk: "#F6F2E9",
-        clay: "#A8543A",
-        turf: "#1B4332",
-        brass: "#C9A227",
+        ink: "#1C1A1A",
+        chalk: "#FAF8F5",
+        clay: "#A92F2D",
+        turf: "#6E1F1E",
+        brass: "#AEB2B6",
       },
       fontFamily: {
         display: ["var(--font-display)", "sans-serif"],
