@@ -67,14 +67,14 @@ export default async function HomePage() {
             </div>
 
             <div className="flex justify-center md:justify-end">
-              <div className="relative h-48 w-48 overflow-hidden rounded-full border-[6px] border-chalk shadow-2xl sm:h-56 sm:w-56">
+              <div className="relative h-56 w-56 overflow-hidden rounded-full border-[6px] border-chalk shadow-2xl sm:h-64 sm:w-64">
                 <Image
                   src="/logo-mark.jpg"
                   alt="Felion Good Baseball emblem"
                   fill
                   priority
                   className="object-cover"
-                  sizes="224px"
+                  sizes="256px"
                 />
               </div>
             </div>
