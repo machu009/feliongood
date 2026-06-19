@@ -8,6 +8,8 @@ export async function updateSettings(formData) {
 
   const fields = {
     bio: formData.get("bio")?.toString().trim() || "",
+    coach_name: formData.get("coach_name")?.toString().trim() || "",
+    coach_bio: formData.get("coach_bio")?.toString().trim() || "",
     donation_venmo: formData.get("donation_venmo")?.toString().trim() || "",
     donation_paypal: formData.get("donation_paypal")?.toString().trim() || "",
     contact_email: formData.get("contact_email")?.toString().trim() || "",

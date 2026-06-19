@@ -31,6 +31,38 @@ export default function SettingsForm({ initialValues }) {
         />
       </div>
 
+      <div className="stitch-divider" />
+
+      <div>
+        <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+          Coach name (Meet the Coach section)
+        </label>
+        <input
+          name="coach_name"
+          defaultValue={initialValues.coach_name || ""}
+          placeholder="Coach Felion"
+          className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+        />
+      </div>
+      <div>
+        <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+          Coach bio (shown on the homepage)
+        </label>
+        <textarea
+          name="coach_bio"
+          rows={4}
+          defaultValue={initialValues.coach_bio || ""}
+          placeholder="A few sentences about your coaching background and philosophy."
+          className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+        />
+        <p className="mt-1 font-mono text-xs text-ink/50">
+          To change the photo itself, send Matt a new one — swapping a file
+          isn&rsquo;t editable from here yet.
+        </p>
+      </div>
+
+      <div className="stitch-divider" />
+
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <label className="font-mono text-xs uppercase tracking-wide text-ink/70">

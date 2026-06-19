@@ -84,6 +84,36 @@ export default async function HomePage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-6 py-16">
+        <div className="grid items-center gap-10 sm:grid-cols-[auto_1fr]">
+          <div className="relative mx-auto h-40 w-40 overflow-hidden rounded-md border-4 border-ink shadow-lg sm:mx-0 sm:h-48 sm:w-48">
+            <Image
+              src="/coach-felion.jpg"
+              alt={settings?.coach_name || "Coach Felion"}
+              fill
+              className="object-cover"
+              sizes="192px"
+            />
+          </div>
+          <div>
+            <p className="font-mono text-sm uppercase tracking-[0.2em] text-clay">
+              Meet the Coach
+            </p>
+            <h2 className="mt-2 font-display text-3xl tracking-wide">
+              {settings?.coach_name || "Coach Felion"}
+            </h2>
+            <p className="mt-3 max-w-2xl text-ink/80">
+              {settings?.coach_bio ||
+                "Dedicated to helping young players build fundamentals, work ethic, and a love for the game — on and off the field."}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="mx-auto max-w-5xl px-6">
+        <div className="stitch-divider" />
+      </div>
+
+      <section className="mx-auto max-w-5xl px-6 py-16">
         <div className="flex items-baseline justify-between">
           <h2 className="font-display text-3xl tracking-wide">
             On the Roster Now
