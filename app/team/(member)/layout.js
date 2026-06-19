@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import LogoutButton from "@/components/LogoutButton";
 import { createClient } from "@/lib/supabase/server";
 
@@ -30,8 +31,19 @@ export default async function TeamMemberLayout({ children }) {
     <div className="min-h-screen bg-chalk">
       <header className="border-b-4 border-ink bg-turf text-chalk">
         <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-          <Link href="/team" className="font-display text-2xl tracking-wide">
-            FELION GOOD <span className="text-brass">TEAM</span>
+          <Link href="/team" className="flex items-center gap-3">
+            <span className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-chalk/40 bg-chalk">
+              <Image
+                src="/granger-lancers.jpg"
+                alt="Granger Lancers"
+                fill
+                className="object-cover"
+                sizes="40px"
+              />
+            </span>
+            <span className="font-display text-2xl tracking-wide">
+              FELION GOOD <span className="text-brass">TEAM</span>
+            </span>
           </Link>
           <nav className="flex items-center gap-5 font-mono text-sm uppercase tracking-wide">
             {profile?.role === "admin" ? (

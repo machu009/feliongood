@@ -105,6 +105,20 @@ export default async function HomePage() {
               {settings?.coach_bio ||
                 "Dedicated to helping young players build fundamentals, work ethic, and a love for the game — on and off the field."}
             </p>
+            <div className="mt-5 inline-flex items-center gap-3 border-2 border-ink/15 bg-white px-4 py-2">
+              <span className="relative h-9 w-9 overflow-hidden rounded-full">
+                <Image
+                  src="/granger-lancers.jpg"
+                  alt="Granger Lancers"
+                  fill
+                  className="object-cover"
+                  sizes="36px"
+                />
+              </span>
+              <span className="font-mono text-xs uppercase tracking-wide text-ink/70">
+                Proudly coaching at Granger
+              </span>
+            </div>
           </div>
         </div>
       </section>
