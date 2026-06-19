@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
+  }
+}
+
+@layer utilities {
+  /* Dotted leader line, like an old scorecard / program listing:
+     "OPENING DAY CAMP .......... JUNE 14" */
+  .leader-line {
+    flex: 1;
+    border-bottom: 2px dotted theme("colors.ink / 35%");
+    margin: 0 0.75rem;
+    transform: translateY(-0.3rem);
+  }
+
+  /* Hand-stamped badge, slightly rotated, like a stamped "OPEN" on a roster */
+  .stamp {
+    transform: rotate(-4deg);
+    border: 2px solid currentColor;
+    border-radius: 4px;
+    padding: 0.15rem 0.6rem;
+    letter-spacing: 0.08em;
+  }
+
+  /* Stitch-style divider, evoking baseball seam stitching */
+  .stitch-divider {
+    height: 1px;
+    background-image: repeating-linear-gradient(
+      90deg,
+      theme("colors.clay") 0,
+      theme("colors.clay") 8px,
+      transparent 8px,
+      transparent 16px
+    );
+  }
+}
