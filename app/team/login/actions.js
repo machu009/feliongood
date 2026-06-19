@@ -3,7 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-export async function login(formData) {
+export async function teamLogin(formData) {
   const supabase = createClient();
 
   const email = formData.get("email")?.toString().trim();
@@ -22,5 +22,5 @@ export async function login(formData) {
     return { error: "Incorrect email or password." };
   }
 
-  redirect("/admin");
+  redirect("/team");
 }

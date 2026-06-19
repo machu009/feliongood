@@ -26,24 +26,59 @@ export async function middleware(request) {
   );
 
   const { data } = await supabase.auth.getUser();
-  const isAdminPath = request.nextUrl.pathname.startsWith("/admin");
-  const isLoginPath = request.nextUrl.pathname.startsWith("/admin/login");
+  const path = request.nextUrl.pathname;
 
-  if (isAdminPath && !isLoginPath && !data.user) {
+  const isAdminLogin = path.startsWith("/admin/login");
+  const isAdminPath = path.startsWith("/admin") && !isAdminLogin;
+
+  const isTeamLogin = path.startsWith("/team/login");
+  const isTeamPath = path.startsWith("/team") && !isTeamLogin;
+
+  // Not logged in, trying to reach a protected area -> bounce to the
+  // matching login page.
+  if (isAdminPath && !data.user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     return NextResponse.redirect(url);
   }
+  if (isTeamPath && !data.user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/team/login";
+    return NextResponse.redirect(url);
+  }
 
-  if (isLoginPath && data.user) {
+  // Already logged in, trying to view a login page -> send them where
+  // they belong instead.
+  if (isAdminLogin && data.user) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin";
     return NextResponse.redirect(url);
+  }
+  if (isTeamLogin && data.user) {
+    const url = request.nextUrl.clone();
+    url.pathname = "/team";
+    return NextResponse.redirect(url);
+  }
+
+  // Logged in and hitting /admin/* -> must actually be an admin, not
+  // just any team member.
+  if (isAdminPath && data.user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", data.user.id)
+      .single();
+
+    if (profile?.role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/team";
+      return NextResponse.redirect(url);
+    }
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: ["/admin/:path*", "/team/:path*"],
 };
