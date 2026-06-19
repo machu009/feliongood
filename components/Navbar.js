@@ -26,6 +26,12 @@ export default function Navbar() {
           <Link href="/donate" className="hover:text-clay">
             Donate
           </Link>
+          <Link
+            href="/team/login"
+            className="border-2 border-ink px-4 py-2 hover:border-clay hover:text-clay"
+          >
+            Team Login
+          </Link>
         </nav>
       </div>
     </header>
