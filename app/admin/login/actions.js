@@ -21,13 +21,17 @@ export async function login(formData) {
   if (error) {
     // TEMPORARY DEBUG: show the real Supabase error instead of a generic
     // message. Revert this once login works.
+    const rawUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const rawKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
     const envCheck = {
-      hasUrl: Boolean(process.env.NEXT_PUBLIC_SUPABASE_URL),
-      urlPreview: process.env.NEXT_PUBLIC_SUPABASE_URL
-        ? process.env.NEXT_PUBLIC_SUPABASE_URL.slice(0, 25) + "..."
-        : "MISSING",
-      hasKey: Boolean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
-      keyLength: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.length || 0,
+      fullUrl: rawUrl,
+      urlLength: rawUrl.length,
+      urlHasTrailingSlash: rawUrl.endsWith("/"),
+      urlHasWhitespace: rawUrl !== rawUrl.trim(),
+      keyPrefix: rawKey.slice(0, 15),
+      keySuffix: rawKey.slice(-10),
+      keyLength: rawKey.length,
+      keyHasWhitespace: rawKey !== rawKey.trim(),
     };
     return {
       error: `DEBUG: ${error.message} (status: ${error.status || "n/a"}, code: ${
