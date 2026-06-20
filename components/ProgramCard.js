@@ -20,17 +20,17 @@ export default function ProgramCard({ program, number }) {
     : "Ongoing";
 
   return (
-    <div className="flex gap-5 border-2 border-ink bg-chalk p-5">
-      <div className="w-14 shrink-0 text-center font-display text-5xl leading-none text-clay">
+    <div className="flex gap-3 border-2 border-ink bg-chalk p-4 sm:gap-5 sm:p-5">
+      <div className="w-10 shrink-0 text-center font-display text-3xl leading-none text-clay sm:w-14 sm:text-5xl">
         {String(number).padStart(2, "0")}
       </div>
-      <div className="flex-1">
-        <div className="flex items-baseline">
-          <h3 className="font-display text-2xl leading-none tracking-wide">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-baseline">
+          <h3 className="font-display text-xl leading-none tracking-wide sm:text-2xl">
             {program.name}
           </h3>
-          <span className="leader-line" />
-          <span className="shrink-0 font-mono text-sm text-ink/70">
+          <span className="leader-line hidden sm:inline-flex" />
+          <span className="mt-1 shrink-0 font-mono text-xs text-ink/70 sm:mt-0 sm:text-sm">
             {dateLabel}
           </span>
         </div>
@@ -45,7 +45,7 @@ export default function ProgramCard({ program, number }) {
           <p className="mt-3 text-sm text-ink/80">{program.description}</p>
         ) : null}
 
-        <div className="mt-4 flex items-center gap-4">
+        <div className="mt-4 flex items-center gap-3 sm:gap-4">
           <span
             className={`stamp font-mono text-xs uppercase ${
               deadlinePassed ? "text-ink/40" : "text-turf"

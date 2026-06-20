@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function Footer({ contactEmail, contactPhone }) {
   return (
     <footer className="mt-20 border-t-4 border-ink bg-ink text-chalk">
-      <div className="mx-auto max-w-5xl px-6 py-10 font-mono text-sm">
+      <div className="mx-auto max-w-5xl px-4 py-8 font-mono text-sm sm:px-6 sm:py-10">
         <div className="flex items-center gap-3">
           <span className="relative h-9 w-9 overflow-hidden rounded-full border-2 border-chalk/30">
             <Image
