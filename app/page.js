@@ -39,10 +39,8 @@ export default async function HomePage() {
 
         <div className="relative mx-auto max-w-5xl px-4 py-12 sm:px-6 sm:py-20">
           <div className="grid items-center gap-8 md:grid-cols-[1.3fr_1fr] md:gap-12">
-            <div
-              className="order-first flex justify-center md:order-none md:justify-start"
-            >
-              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-chalk shadow-2xl sm:h-56 sm:w-56 sm:border-[6px] md:hidden">
+            <div className="flex justify-center md:hidden">
+              <div className="relative h-32 w-32 overflow-hidden rounded-full border-4 border-chalk shadow-2xl sm:h-56 sm:w-56 sm:border-[6px]">
                 <Image
                   src="/logo-mark.jpg"
                   alt="Felion Good Baseball emblem"
