@@ -7,6 +7,7 @@ import LogoutButton from "@/components/LogoutButton";
 
 const LINKS = [
   { href: "/team", label: "Home" },
+  { href: "/team/locker-room", label: "Locker Room" },
   { href: "/team/calendar", label: "Calendar" },
   { href: "/team/schedule", label: "Schedule" },
   { href: "/team/roster", label: "Roster" },

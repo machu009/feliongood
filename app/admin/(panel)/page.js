@@ -56,6 +56,7 @@ export default async function AdminDashboard() {
     { data: members },
     { data: messages },
     { data: teamSettings },
+    { data: threads },
   ] = await Promise.all([
     supabase.from("programs").select("*").eq("is_active", true),
     supabase.from("signups").select("id"),
@@ -73,6 +74,7 @@ export default async function AdminDashboard() {
       .order("created_at", { ascending: false })
       .limit(3),
     supabase.from("team_settings").select("*").single(),
+    supabase.from("forum_threads").select("id"),
   ]);
 
   const upcomingGames = (games || []).filter((g) => g.game_date >= today);
@@ -95,13 +97,14 @@ export default async function AdminDashboard() {
       </p>
 
       {/* Quick stats */}
-      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+      <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatTile label="Programs" value={programs?.length || 0} href="/admin/programs" />
         <StatTile label="Sign-ups" value={signups?.length || 0} href="/admin/programs" />
         <StatTile label="Roster" value={players?.length || 0} href="/admin/roster" />
         <StatTile label="Upcoming" value={upcomingGames.length} href="/admin/schedule" />
         <StatTile label="Team Members" value={members?.length || 0} href="/admin/team" />
         <StatTile label="Messages" value={messages?.length || 0} href="/admin/messages" />
+        <StatTile label="Locker Room Topics" value={threads?.length || 0} href="/team/locker-room" />
       </div>
 
       <div className="mt-8 grid gap-6 md:grid-cols-2">

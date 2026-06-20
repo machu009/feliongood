@@ -61,6 +61,7 @@ export default async function TeamHomePage() {
       ) : null}
 
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
+        <QuickLink href="/team/locker-room" label="Locker Room" />
         <QuickLink href="/team/calendar" label="Team Calendar" />
         <QuickLink href="/team/schedule" label="Full Schedule" />
         <QuickLink href="/team/roster" label="Roster" />
