@@ -28,13 +28,23 @@ async function uniqueSlug(supabase, base, excludeId = null) {
 }
 
 function readProgramFields(formData) {
+  const format = formData.get("format")?.toString() === "clinic" ? "clinic" : "season";
+  const startDate = formData.get("start_date")?.toString() || null;
+  // A one-day clinic is, by definition, a single date — keep end_date in
+  // sync so existing date-range display logic still works everywhere.
+  const endDate =
+    format === "clinic" ? startDate : formData.get("end_date")?.toString() || null;
+
   return {
     name: formData.get("name")?.toString().trim() || "",
     type: formData.get("type")?.toString().trim() || "camp",
+    format,
     description: formData.get("description")?.toString().trim() || "",
     location: formData.get("location")?.toString().trim() || "",
-    start_date: formData.get("start_date")?.toString() || null,
-    end_date: formData.get("end_date")?.toString() || null,
+    start_date: startDate,
+    end_date: endDate,
+    start_time: formData.get("start_time")?.toString().trim() || "",
+    end_time: formData.get("end_time")?.toString().trim() || "",
     signup_deadline: formData.get("signup_deadline")?.toString() || null,
     capacity: formData.get("capacity")
       ? parseInt(formData.get("capacity"), 10)
@@ -63,9 +73,10 @@ export async function createProgram(formData) {
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/programs");
   revalidatePath("/programs");
   revalidatePath("/");
-  redirect("/admin");
+  redirect("/admin/programs");
 }
 
 export async function updateProgram(programId, formData) {
@@ -86,9 +97,10 @@ export async function updateProgram(programId, formData) {
   }
 
   revalidatePath("/admin");
+  revalidatePath("/admin/programs");
   revalidatePath("/programs");
   revalidatePath("/");
-  redirect("/admin");
+  redirect("/admin/programs");
 }
 
 export async function deleteProgram(programId) {
@@ -96,6 +108,7 @@ export async function deleteProgram(programId) {
   await supabase.from("programs").delete().eq("id", programId);
 
   revalidatePath("/admin");
+  revalidatePath("/admin/programs");
   revalidatePath("/programs");
   revalidatePath("/");
 }

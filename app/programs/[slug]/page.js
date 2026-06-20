@@ -58,6 +58,16 @@ export default async function ProgramDetailPage({ params }) {
               </dd>
             </div>
           ) : null}
+          {program.start_time || program.end_time ? (
+            <div>
+              <dt className="text-ink/50 uppercase text-xs">Time</dt>
+              <dd>
+                {[program.start_time, program.end_time]
+                  .filter(Boolean)
+                  .join(" – ")}
+              </dd>
+            </div>
+          ) : null}
           {program.location ? (
             <div>
               <dt className="text-ink/50 uppercase text-xs">Location</dt>

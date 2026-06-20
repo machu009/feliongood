@@ -19,6 +19,11 @@ export default function ProgramCard({ program, number }) {
       : formatDate(program.start_date)
     : "Ongoing";
 
+  const timeLabel =
+    program.format === "clinic" && (program.start_time || program.end_time)
+      ? [program.start_time, program.end_time].filter(Boolean).join(" – ")
+      : null;
+
   return (
     <div className="flex gap-3 border-2 border-ink bg-chalk p-4 sm:gap-5 sm:p-5">
       <div className="w-10 shrink-0 text-center font-display text-3xl leading-none text-clay sm:w-14 sm:text-5xl">
@@ -35,9 +40,9 @@ export default function ProgramCard({ program, number }) {
           </span>
         </div>
 
-        {program.location ? (
+        {program.location || timeLabel ? (
           <p className="mt-1 font-mono text-xs uppercase tracking-wide text-ink/60">
-            {program.location}
+            {[program.location, timeLabel].filter(Boolean).join(" · ")}
           </p>
         ) : null}
 
