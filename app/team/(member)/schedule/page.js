@@ -23,14 +23,16 @@ function formatTime(time) {
 export default async function TeamSchedulePage() {
   const supabase = createClient();
 
+  // Fetch games with program info
   const { data: games } = await supabase
     .from("games")
-    .select("*")
+    .select("*, programs(id, name)")
     .order("game_date", { ascending: true });
 
+  // Fetch practices with program info
   const { data: practices } = await supabase
     .from("practices")
-    .select("*")
+    .select("*, programs(id, name)")
     .eq("is_cancelled", false)
     .order("practice_date", { ascending: true });
 
@@ -88,11 +90,18 @@ export default async function TeamSchedulePage() {
                   {event.type === "game" ? "Game" : <span className="text-turf">Practice</span>}
                 </td>
                 <td className="p-3">
-                  {event.type === "game"
-                    ? `${event.is_home ? "vs" : "@"} ${event.opponent}`
-                    : event.special_gear
-                    ? `📦 ${event.special_gear}`
-                    : "—"}
+                  <div>
+                    {event.type === "game"
+                      ? `${event.is_home ? "vs" : "@"} ${event.opponent}`
+                      : event.special_gear
+                      ? `📦 ${event.special_gear}`
+                      : "—"}
+                  </div>
+                  {event.programs?.name && (
+                    <div className="font-mono text-xs text-ink/60 mt-1">
+                      {event.programs.name}
+                    </div>
+                  )}
                 </td>
                 <td className="p-3">{event.location || "—"}</td>
                 <td className="p-3">
