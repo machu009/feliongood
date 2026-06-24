@@ -27,19 +27,32 @@ function getWeekLabel(dateString) {
   return `Week of ${monthName} ${date.getDate()}`;
 }
 
-export default async function SchedulePage() {
+export default async function SchedulePage({ searchParams }) {
   const supabase = createClient();
+  const selectedProgramId = searchParams?.program;
 
-  // Fetch games
+  // Fetch all programs
+  const { data: programs } = await supabase
+    .from("programs")
+    .select("id, name, slug")
+    .order("sort_order", { ascending: true });
+
+  // If no program selected, use first one
+  const programId = selectedProgramId || programs?.[0]?.id;
+  const selectedProgram = programs?.find((p) => p.id === programId);
+
+  // Fetch games for this program
   const { data: games } = await supabase
     .from("games")
     .select("*")
+    .eq("program_id", programId)
     .order("game_date", { ascending: true });
 
-  // Fetch practices
+  // Fetch practices for this program
   const { data: practices } = await supabase
     .from("practices")
     .select("*")
+    .eq("program_id", programId)
     .eq("is_cancelled", false)
     .order("practice_date", { ascending: true });
 
@@ -56,7 +69,7 @@ export default async function SchedulePage() {
     return acc;
   }, {});
 
-  // Sort weeks chronologically (nearest first)
+  // Sort weeks by nearest date first
   const sortedWeeks = Object.keys(grouped).sort((a, b) => {
     const dateA = new Date(grouped[a][0].date);
     const dateB = new Date(grouped[b][0].date);
@@ -74,13 +87,13 @@ export default async function SchedulePage() {
         </div>
         <div className="flex gap-2">
           <Link
-            href="/admin/schedule/new"
+            href={`/admin/schedule/new?program=${programId}`}
             className="bg-ink px-5 py-2.5 font-mono text-sm uppercase tracking-wide text-chalk hover:bg-ink/90"
           >
             + Add Game
           </Link>
           <Link
-            href="/admin/schedule/practices/new"
+            href={`/admin/schedule/practices/new?program=${programId}`}
             className="bg-turf px-5 py-2.5 font-mono text-sm uppercase tracking-wide text-white hover:bg-turf/90"
           >
             + Practice
@@ -88,11 +101,35 @@ export default async function SchedulePage() {
         </div>
       </div>
 
+      {/* Program Selector */}
+      {programs && programs.length > 1 && (
+        <div className="mt-6 flex items-center gap-4">
+          <label className="font-mono text-sm uppercase tracking-wide">
+            Team:
+          </label>
+          <div className="flex gap-2">
+            {programs.map((prog) => (
+              <Link
+                key={prog.id}
+                href={`/admin/schedule?program=${prog.id}`}
+                className={`px-4 py-2 font-mono text-sm uppercase tracking-wide border-2 transition-colors ${
+                  prog.id === programId
+                    ? "bg-ink text-chalk border-ink"
+                    : "border-ink/15 text-ink hover:border-ink/30"
+                }`}
+              >
+                {prog.name}
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {sortedWeeks.length === 0 ? (
         <div className="mt-8">
           <p className="font-mono text-sm text-ink/60">
             No upcoming games or practices.{" "}
-            <Link href="/admin/schedule/new" className="text-clay underline">
+            <Link href={`/admin/schedule/new?program=${programId}`} className="text-clay underline">
               Add your first game
             </Link>
             .
