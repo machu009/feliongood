@@ -11,13 +11,30 @@ function formatDate(d) {
   });
 }
 
+function formatTime(time) {
+  if (!time) return "";
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 || 12;
+  return `${displayHour}:${minutes}${ampm}`;
+}
+
 export default async function TeamSchedulePage() {
   const supabase = createClient();
+
   const { data: games } = await supabase
     .from("games")
     .select("*")
     .order("game_date", { ascending: true });
 
+  const { data: practices } = await supabase
+    .from("practices")
+    .select("*")
+    .eq("is_cancelled", false)
+    .order("practice_date", { ascending: true });
+
+  // Calculate win-loss record
   const record = (games || []).reduce(
     (acc, g) => {
       if (g.result === "W") acc.w += 1;
@@ -27,6 +44,12 @@ export default async function TeamSchedulePage() {
     },
     { w: 0, l: 0, t: 0 }
   );
+
+  // Combine and sort by date
+  const allEvents = [
+    ...(games || []).map((g) => ({ ...g, type: "game", date: g.game_date })),
+    ...(practices || []).map((p) => ({ ...p, type: "practice", date: p.practice_date })),
+  ].sort((a, b) => new Date(a.date) - new Date(b.date));
 
   return (
     <div>
@@ -43,35 +66,50 @@ export default async function TeamSchedulePage() {
           <thead>
             <tr className="border-b-2 border-ink/15 bg-ink/5 text-left uppercase text-xs tracking-wide">
               <th className="p-3">Date</th>
-              <th className="p-3">Opponent</th>
+              <th className="p-3">Type</th>
+              <th className="p-3">Opponent / Details</th>
               <th className="p-3">Location</th>
               <th className="p-3">Result</th>
             </tr>
           </thead>
           <tbody>
-            {(games || []).map((g) => (
-              <tr key={g.id} className="border-b border-ink/10">
+            {allEvents.map((event) => (
+              <tr
+                key={`${event.type}-${event.id}`}
+                className={`border-b border-ink/10 ${
+                  event.type === "practice" ? "bg-turf/5" : ""
+                }`}
+              >
                 <td className="p-3 whitespace-nowrap">
-                  {formatDate(g.game_date)}
-                  {g.game_time ? ` · ${g.game_time}` : ""}
+                  {formatDate(event.date)}
+                  {event.time ? ` · ${formatTime(event.time)}` : ""}
+                </td>
+                <td className="p-3 uppercase text-xs tracking-wide font-bold">
+                  {event.type === "game" ? "Game" : <span className="text-turf">Practice</span>}
                 </td>
                 <td className="p-3">
-                  {g.is_home ? "vs" : "@"} {g.opponent}
+                  {event.type === "game"
+                    ? `${event.is_home ? "vs" : "@"} ${event.opponent}`
+                    : event.special_gear
+                    ? `📦 ${event.special_gear}`
+                    : "—"}
                 </td>
-                <td className="p-3">{g.location || "—"}</td>
+                <td className="p-3">{event.location || "—"}</td>
                 <td className="p-3">
-                  {g.result
-                    ? `${g.result} ${g.team_score ?? ""}${
-                        g.team_score != null ? "-" : ""
-                      }${g.opponent_score ?? ""}`
+                  {event.type === "game"
+                    ? event.result
+                      ? `${event.result} ${event.team_score ?? ""}${
+                          event.team_score != null ? "-" : ""
+                        }${event.opponent_score ?? ""}`
+                      : "—"
                     : "—"}
                 </td>
               </tr>
             ))}
-            {(!games || games.length === 0) && (
+            {allEvents.length === 0 && (
               <tr>
-                <td colSpan={4} className="p-6 text-center text-ink/50">
-                  No games scheduled yet.
+                <td colSpan={5} className="p-6 text-center text-ink/50">
+                  No games or practices scheduled yet.
                 </td>
               </tr>
             )}
