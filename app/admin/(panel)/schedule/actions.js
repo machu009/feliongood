@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 function readGameFields(formData) {
   return {
+    program_id: formData.get("program_id")?.toString() || null,
     opponent: formData.get("opponent")?.toString().trim() || "",
     game_date: formData.get("game_date")?.toString() || null,
     game_time: formData.get("game_time")?.toString().trim() || "",
@@ -36,9 +37,10 @@ export async function createGame(formData) {
     return { error: "Could not add the game. Please try again." };
   }
 
+  const programId = fields.program_id;
   revalidatePath("/admin/schedule");
   revalidatePath("/team/schedule");
-  redirect("/admin/schedule");
+  redirect(`/admin/schedule?program=${programId}`);
 }
 
 export async function updateGame(gameId, formData) {
@@ -58,9 +60,10 @@ export async function updateGame(gameId, formData) {
     return { error: "Could not save changes. Please try again." };
   }
 
+  const programId = fields.program_id;
   revalidatePath("/admin/schedule");
   revalidatePath("/team/schedule");
-  redirect("/admin/schedule");
+  redirect(`/admin/schedule?program=${programId}`);
 }
 
 export async function deleteGame(gameId) {
