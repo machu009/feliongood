@@ -56,8 +56,12 @@ export default async function SchedulePage() {
     return acc;
   }, {});
 
-  // Sort weeks chronologically
-  const sortedWeeks = Object.keys(grouped).sort();
+  // Sort weeks chronologically (nearest first)
+  const sortedWeeks = Object.keys(grouped).sort((a, b) => {
+    const dateA = new Date(grouped[a][0].date);
+    const dateB = new Date(grouped[b][0].date);
+    return dateA - dateB;
+  });
 
   return (
     <div>
