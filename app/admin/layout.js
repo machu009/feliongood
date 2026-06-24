@@ -28,7 +28,7 @@ export default async function AdminLayout({ children }) {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <>
       {/* Header */}
       <header className="bg-ink border-b-2 border-ink/20">
         <div className="px-8 py-6">
@@ -85,7 +85,9 @@ export default async function AdminLayout({ children }) {
       </header>
 
       {/* Content */}
-      <main className="px-8 py-12 max-w-7xl mx-auto">{children}</main>
-    </div>
+      <main className="px-8 py-12 max-w-7xl mx-auto bg-white/50 min-h-screen">
+        {children}
+      </main>
+    </>
   );
 }
