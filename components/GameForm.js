@@ -1,10 +1,28 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
+import { createClient } from "@/lib/supabase/client";
 
 export default function GameForm({ initialValues = {}, action, submitLabel, programId }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
+  const [programs, setPrograms] = useState([]);
+  const [selectedProgram, setSelectedProgram] = useState(programId || "");
+  const supabase = createClient();
+
+  useEffect(() => {
+    const loadPrograms = async () => {
+      const { data } = await supabase
+        .from("programs")
+        .select("id, name")
+        .order("sort_order", { ascending: true });
+      setPrograms(data || []);
+      if (!selectedProgram && data?.length > 0) {
+        setSelectedProgram(data[0].id);
+      }
+    };
+    loadPrograms();
+  }, []);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -19,7 +37,28 @@ export default function GameForm({ initialValues = {}, action, submitLabel, prog
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-4">
       {/* Hidden program_id field */}
-      <input type="hidden" name="program_id" value={programId || ""} />
+      <input type="hidden" name="program_id" value={selectedProgram || ""} />
+
+      {/* Program selector */}
+      {programs.length > 0 && (
+        <div>
+          <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+            Team
+          </label>
+          <select
+            value={selectedProgram}
+            onChange={(e) => setSelectedProgram(e.target.value)}
+            className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+          >
+            <option value="">Select a team</option>
+            {programs.map((prog) => (
+              <option key={prog.id} value={prog.id}>
+                {prog.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div>
         <label className="font-mono text-xs uppercase tracking-wide text-ink/70">

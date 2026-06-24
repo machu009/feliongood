@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +12,8 @@ export default function PracticeForm({ initialData = null, isTemplate = true, pr
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [programs, setPrograms] = useState([]);
+  const [selectedProgram, setSelectedProgram] = useState(programId || "");
 
   // Determine if we're editing
   const isEditing = !!initialData?.id;
@@ -31,6 +33,20 @@ export default function PracticeForm({ initialData = null, isTemplate = true, pr
   const [generateThroughDate, setGenerateThroughDate] = useState("");
   const [isSeries, setIsSeries] = useState(false);
   const [seriesDates, setSeriesDates] = useState([""]);
+
+  useEffect(() => {
+    const loadPrograms = async () => {
+      const { data } = await supabase
+        .from("programs")
+        .select("id, name")
+        .order("sort_order", { ascending: true });
+      setPrograms(data || []);
+      if (!selectedProgram && data?.length > 0) {
+        setSelectedProgram(data[0].id);
+      }
+    };
+    loadPrograms();
+  }, []);
 
   const toggleDay = (day) => {
     setSelectedDays((prev) =>
@@ -251,7 +267,26 @@ export default function PracticeForm({ initialData = null, isTemplate = true, pr
         </div>
       )}
 
-      {/* Practice Type Selection */}
+      {/* Program Selector */}
+      {programs.length > 0 && (
+        <div>
+          <label className="block font-mono text-sm uppercase tracking-wide mb-3">
+            Team
+          </label>
+          <select
+            value={selectedProgram}
+            onChange={(e) => setSelectedProgram(e.target.value)}
+            className="w-full border-2 border-ink/15 p-3 font-mono text-sm"
+          >
+            <option value="">Select a team</option>
+            {programs.map((prog) => (
+              <option key={prog.id} value={prog.id}>
+                {prog.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
       <div>
         <label className="block font-mono text-sm uppercase tracking-wide mb-3">
           Practice Type
