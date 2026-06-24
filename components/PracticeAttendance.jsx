@@ -26,13 +26,44 @@ export default function PracticeAttendance({ practiceId, onClose }) {
       setPractice(practiceData);
 
       // Get attendance records with player info
-      const { data: attendanceData } = await supabase
+      let { data: attendanceData } = await supabase
         .from("practice_attendance")
         .select("*, players(id, full_name, jersey_number, position)")
         .eq("practice_id", practiceId)
         .order("players.jersey_number", { ascending: true });
 
-      setAttendance(attendanceData || []);
+      // If no attendance records exist, create them from active players
+      if (!attendanceData || attendanceData.length === 0) {
+        const { data: activePlayers } = await supabase
+          .from("players")
+          .select("id, full_name, jersey_number, position")
+          .eq("is_active", true)
+          .order("jersey_number", { ascending: true });
+
+        if (activePlayers && activePlayers.length > 0) {
+          // Create attendance records
+          const attendanceRecords = activePlayers.map((player) => ({
+            practice_id: practiceId,
+            player_id: player.id,
+            attended: false,
+          }));
+
+          await supabase
+            .from("practice_attendance")
+            .insert(attendanceRecords);
+
+          // Fetch the newly created records
+          const { data: newAttendanceData } = await supabase
+            .from("practice_attendance")
+            .select("*, players(id, full_name, jersey_number, position)")
+            .eq("practice_id", practiceId)
+            .order("players.jersey_number", { ascending: true });
+
+          setAttendance(newAttendanceData || []);
+        }
+      } else {
+        setAttendance(attendanceData || []);
+      }
     } catch (err) {
       console.error("Error loading attendance:", err);
     } finally {
