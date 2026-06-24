@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import DeleteGameButton from "@/components/DeleteGameButton";
-import PracticeAttendanceModal from "@/components/PracticeAttendanceModal";
+import DeletePracticeButton from "@/components/DeletePracticeButton";
 
 export const revalidate = 0;
 
@@ -197,6 +197,7 @@ function PracticeEvent({ practice }) {
         >
           Edit
         </Link>
+        <DeletePracticeButton practiceId={practice.id} practiceDate={formatDate(practice.practice_date)} />
       </div>
     </div>
   );

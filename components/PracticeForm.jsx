@@ -13,8 +13,13 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  // Determine if we're editing
+  const isEditing = !!initialData?.id;
+
   // Form state
-  const [practiceType, setPracticeType] = useState(initialData?.template_id ? "template" : "one-off");
+  const [practiceType, setPracticeType] = useState(
+    initialData?.template_id ? "template" : "one-off"
+  );
   const [cadence, setCadence] = useState(initialData?.cadence || "weekly");
   const [selectedDays, setSelectedDays] = useState(initialData?.days_of_week || ["Monday", "Wednesday"]);
   const [startTime, setStartTime] = useState(initialData?.start_time || "18:00");
@@ -116,27 +121,63 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
     setError(null);
 
     try {
-      if (practiceType === "template") {
-        // Create template
-        const { data: template, error: templateError } = await supabase
-          .from("practice_templates")
-          .insert({
-            cadence,
-            days_of_week: selectedDays,
+      const isEditing = initialData?.id;
+
+      if (isEditing && !initialData?.template_id) {
+        // Update existing practice
+        const { error: updateError } = await supabase
+          .from("practices")
+          .update({
             start_time: startTime,
             duration_minutes: durationMinutes,
             location,
             special_gear: specialGear,
             notes,
+            updated_at: new Date().toISOString(),
           })
-          .select()
-          .single();
+          .eq("id", initialData.id);
 
-        if (templateError) throw templateError;
+        if (updateError) throw updateError;
+        router.push("/admin/schedule");
+      } else if (practiceType === "template") {
+        // Create or update template
+        if (isEditing && initialData?.template_id) {
+          const { error: updateError } = await supabase
+            .from("practice_templates")
+            .update({
+              cadence,
+              days_of_week: selectedDays,
+              start_time: startTime,
+              duration_minutes: durationMinutes,
+              location,
+              special_gear: specialGear,
+              notes,
+              updated_at: new Date().toISOString(),
+            })
+            .eq("id", initialData.template_id);
 
-        // Generate practices from template
-        if (generateThroughDate) {
-          await generatePracticesFromTemplate(template.id, generateThroughDate);
+          if (updateError) throw updateError;
+        } else {
+          const { data: template, error: templateError } = await supabase
+            .from("practice_templates")
+            .insert({
+              cadence,
+              days_of_week: selectedDays,
+              start_time: startTime,
+              duration_minutes: durationMinutes,
+              location,
+              special_gear: specialGear,
+              notes,
+            })
+            .select()
+            .single();
+
+          if (templateError) throw templateError;
+
+          // Generate practices from template
+          if (generateThroughDate) {
+            await generatePracticesFromTemplate(template.id, generateThroughDate);
+          }
         }
 
         router.push("/admin/schedule");
@@ -442,7 +483,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
           disabled={loading}
           className="bg-ink text-chalk px-6 py-3 font-mono text-sm uppercase tracking-wide hover:bg-ink/90 disabled:opacity-50"
         >
-          {loading ? "Creating..." : "Create Practice"}
+          {loading ? "Saving..." : isEditing ? "Update Practice" : "Create Practice"}
         </button>
         <button
           type="button"
