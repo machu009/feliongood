@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 
-export default function GameForm({ initialValues = {}, action, submitLabel }) {
+export default function GameForm({ initialValues = {}, action, submitLabel, programId }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
 
@@ -18,6 +18,9 @@ export default function GameForm({ initialValues = {}, action, submitLabel }) {
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-4">
+      {/* Hidden program_id field */}
+      <input type="hidden" name="program_id" value={programId || ""} />
+
       <div>
         <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
           Opponent

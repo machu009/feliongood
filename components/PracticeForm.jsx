@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 const CADENCES = ["weekly", "bi-weekly", "monthly"];
 
-export default function PracticeForm({ initialData = null, isTemplate = true }) {
+export default function PracticeForm({ initialData = null, isTemplate = true, programId }) {
   const supabase = createClient();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
     setSeriesDates(seriesDates.filter((_, i) => i !== index));
   };
 
-  const generatePracticesFromTemplate = async (templateId, throughDate) => {
+  const generatePracticesFromTemplate = async (templateId, throughDate, programId) => {
     // Generate practice records from template until throughDate
     const template = await supabase
       .from("practice_templates")
@@ -78,6 +78,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
           location: template.data.location,
           special_gear: template.data.special_gear,
           template_id: templateId,
+          program_id: programId,
         });
       }
       currentDate.setDate(currentDate.getDate() + 1);
@@ -176,11 +177,11 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
 
           // Generate practices from template
           if (generateThroughDate) {
-            await generatePracticesFromTemplate(template.id, generateThroughDate);
+            await generatePracticesFromTemplate(template.id, generateThroughDate, programId);
           }
         }
 
-        router.push("/admin/schedule");
+        router.push(`/admin/schedule?program=${programId}`);
       } else if (isSeries) {
         // Create multiple one-off practices
         const practicesToCreate = seriesDates
@@ -192,6 +193,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
             location,
             special_gear: specialGear,
             notes,
+            program_id: programId,
           }));
 
         const { error: practicesError } = await supabase
@@ -210,7 +212,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
           await createAttendanceRecords(practice.id);
         }
 
-        router.push("/admin/schedule");
+        router.push(`/admin/schedule?program=${programId}`);
       } else {
         // Create single one-off practice
         const { data: practice, error: practiceError } = await supabase
@@ -222,6 +224,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
             location,
             special_gear: specialGear,
             notes,
+            program_id: programId,
           })
           .select()
           .single();
@@ -231,7 +234,7 @@ export default function PracticeForm({ initialData = null, isTemplate = true }) 
         // Create attendance records
         await createAttendanceRecords(practice.id);
 
-        router.push("/admin/schedule");
+        router.push(`/admin/schedule?program=${programId}`);
       }
     } catch (err) {
       setError(err.message);
