@@ -16,6 +16,7 @@ function readPlayerFields(formData) {
     height: formData.get("height")?.toString().trim() || "",
     notes: formData.get("notes")?.toString().trim() || "",
     is_active: formData.get("is_active") === "on",
+    program_id: formData.get("program_id")?.toString().trim() || null,
   };
 }
 
@@ -25,6 +26,10 @@ export async function createPlayer(formData) {
 
   if (!fields.full_name) {
     return { error: "Player name is required." };
+  }
+
+  if (!fields.program_id) {
+    return { error: "Please select a program." };
   }
 
   const { error } = await supabase.from("players").insert(fields);
@@ -44,6 +49,10 @@ export async function updatePlayer(playerId, formData) {
 
   if (!fields.full_name) {
     return { error: "Player name is required." };
+  }
+
+  if (!fields.program_id) {
+    return { error: "Please select a program." };
   }
 
   const { error } = await supabase

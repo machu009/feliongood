@@ -1,10 +1,21 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 
-export default function PlayerForm({ initialValues = {}, action, submitLabel }) {
+export default function PlayerForm({ initialValues = {}, action, submitLabel, programs = [] }) {
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState(null);
+  const [availablePrograms, setAvailablePrograms] = useState(programs);
+
+  useEffect(() => {
+    if (programs.length === 0) {
+      // Fetch programs if not provided as props
+      fetch("/api/programs")
+        .then((res) => res.json())
+        .then((data) => setAvailablePrograms(data.programs || []))
+        .catch((err) => console.error("Failed to load programs", err));
+    }
+  }, [programs]);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -18,6 +29,25 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel }) 
 
   return (
     <form onSubmit={handleSubmit} className="max-w-xl space-y-4">
+      <div>
+        <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+          Program
+        </label>
+        <select
+          name="program_id"
+          defaultValue={initialValues.program_id || ""}
+          required
+          className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+        >
+          <option value="">Select a program</option>
+          {availablePrograms.map((program) => (
+            <option key={program.id} value={program.id}>
+              {program.name}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <div>
         <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
           Full name
