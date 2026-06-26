@@ -96,6 +96,12 @@ export default async function RosterPage() {
 
               <div className="flex items-center gap-5 shrink-0">
                 <Link
+                  href={`/admin/stats/${player.id}/edit`}
+                  className="font-mono text-xs uppercase tracking-wide text-turf hover:text-turf/70"
+                >
+                  Stats
+                </Link>
+                <Link
                   href={`/admin/roster/${player.id}/edit`}
                   className="font-mono text-xs uppercase tracking-wide text-ink/70 hover:text-ink"
                 >

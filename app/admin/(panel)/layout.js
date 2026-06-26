@@ -14,7 +14,6 @@ const SECTIONS = [
   { href: "/admin/programs", label: "Programs" },
   { href: "/admin/roster", label: "Roster" },
   { href: "/admin/schedule", label: "Schedule" },
-  { href: "/admin/stats", label: "Stats" },
   { href: "/admin/team", label: "Team Members" },
   { href: "/admin/team-settings", label: "Team Settings" },
   { href: "/admin/messages", label: "Messages" },
