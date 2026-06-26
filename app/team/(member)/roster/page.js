@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 
 export const revalidate = 0;
@@ -22,9 +23,10 @@ export default async function TeamRosterPage() {
             : [];
 
           return (
-            <div
+            <Link
               key={player.id}
-              className="flex items-center gap-4 border-2 border-ink/15 bg-white p-4"
+              href={`/team/roster/${player.id}`}
+              className="flex items-center gap-4 border-2 border-ink/15 bg-white p-4 hover:border-clay"
             >
               {/* Profile Picture */}
               {player.profile_pic_url ? (
@@ -73,7 +75,7 @@ export default async function TeamRosterPage() {
                   {player.bats_throws ? ` · ${player.bats_throws}` : ""}
                 </p>
               </div>
-            </div>
+            </Link>
           );
         })}
 
