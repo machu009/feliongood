@@ -51,23 +51,38 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
     setError(null);
 
     try {
-      const buffer = await file.arrayBuffer();
-      const result = await uploadProfilePic(
-        initialValues.id || "new",
-        Buffer.from(buffer),
-        file.name
-      );
+      // Convert file to base64
+      const reader = new FileReader();
+      reader.onload = async (event) => {
+        try {
+          const base64String = event.target?.result;
+          const result = await uploadProfilePic(
+            initialValues.id || "new",
+            base64String,
+            file.name
+          );
 
-      if (result.error) {
-        setError(result.error);
-      } else {
-        setProfilePicUrl(result.url);
-        setError(null);
-      }
+          if (result.error) {
+            setError(result.error);
+          } else {
+            setProfilePicUrl(result.url);
+            setError(null);
+          }
+        } catch (err) {
+          setError("Failed to upload image");
+          console.error(err);
+        } finally {
+          setUploadingPic(false);
+        }
+      };
+      reader.onerror = () => {
+        setError("Failed to read file");
+        setUploadingPic(false);
+      };
+      reader.readAsDataURL(file);
     } catch (err) {
       setError("Failed to upload image");
       console.error(err);
-    } finally {
       setUploadingPic(false);
     }
   }
