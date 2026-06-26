@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
 import { uploadProfilePic } from "@/lib/profile-pic/actions";
 
@@ -10,6 +10,26 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
   const [profilePicUrl, setProfilePicUrl] = useState(initialValues.profile_pic_url || null);
   const [uploadingPic, setUploadingPic] = useState(false);
   const [availablePrograms, setAvailablePrograms] = useState(programs);
+  const [programsFetched, setProgramsFetched] = useState(false);
+
+  // Fetch programs on component mount
+  useEffect(() => {
+    const loadPrograms = async () => {
+      try {
+        const res = await fetch("/api/programs");
+        const data = await res.json();
+        if (data.programs) {
+          setAvailablePrograms(data.programs);
+        }
+      } catch (err) {
+        console.error("Failed to load programs:", err);
+      } finally {
+        setProgramsFetched(true);
+      }
+    };
+
+    loadPrograms();
+  }, []);
 
   async function handleImageUpload(e) {
     const file = e.target.files?.[0];
@@ -112,7 +132,9 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
           required
           className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
         >
-          <option value="">Select a program</option>
+          <option value="">
+            {programsFetched ? "Select a program" : "Loading programs..."}
+          </option>
           {availablePrograms.map((program) => (
             <option key={program.id} value={program.id}>
               {program.name}
