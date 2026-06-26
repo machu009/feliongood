@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { saveAttendance } from "@/lib/attendance/actions";
 
 export default function PracticeAttendance({ practiceId, onClose }) {
   const supabase = createClient();
@@ -99,17 +100,24 @@ export default function PracticeAttendance({ practiceId, onClose }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Update all attendance records
-      for (const player of roster) {
-        await supabase
-          .from("practice_attendance")
-          .update({ attended: player.attended })
-          .eq("practice_id", practiceId)
-          .eq("player_id", player.id);
+      // Prepare attendance data for server action
+      const attendanceData = roster.map((player) => ({
+        player_id: player.id,
+        attended: player.attended,
+      }));
+
+      // Call server action
+      const result = await saveAttendance(practiceId, attendanceData);
+
+      if (result?.error) {
+        console.error("Error saving attendance:", result.error);
+        alert("Failed to save attendance: " + result.error);
+      } else {
+        onClose?.();
       }
-      onClose?.();
     } catch (err) {
       console.error("Error saving attendance:", err);
+      alert("Error saving attendance: " + err.message);
     } finally {
       setSaving(false);
     }
