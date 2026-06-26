@@ -1,5 +1,3 @@
-import Image from "next/image";
-
 export default function PlayerCard({ player, program, onEdit, onRemove }) {
   // Parse honors string into array
   const honors = player.honors
@@ -12,7 +10,8 @@ export default function PlayerCard({ player, program, onEdit, onRemove }) {
         <div className="flex items-start gap-4 flex-1">
           {/* Profile Picture Avatar */}
           {player.profile_pic_url ? (
-            <Image
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={player.profile_pic_url}
               alt={player.full_name}
               width={56}

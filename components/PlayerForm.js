@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useTransition, useEffect } from "react";
-import Image from "next/image";
 import { createClient } from "@/lib/supabase/client";
 
 export default function PlayerForm({ initialValues = {}, action, submitLabel, programs = [] }) {
@@ -11,6 +10,7 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
   const [uploadingPic, setUploadingPic] = useState(false);
   const [availablePrograms, setAvailablePrograms] = useState(programs);
   const [programsFetched, setProgramsFetched] = useState(false);
+  const [selectedProgramId, setSelectedProgramId] = useState(initialValues.program_id || "");
   const supabase = createClient();
 
   // Fetch programs on component mount
@@ -119,7 +119,8 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
         <div className="mt-3 flex items-end gap-4">
           {profilePicUrl && (
             <div className="shrink-0">
-              <Image
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
                 src={profilePicUrl}
                 alt="Profile"
                 width={80}
@@ -149,7 +150,8 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
         </label>
         <select
           name="program_id"
-          defaultValue={initialValues.program_id || ""}
+          value={selectedProgramId}
+          onChange={(e) => setSelectedProgramId(e.target.value)}
           required
           className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
         >
