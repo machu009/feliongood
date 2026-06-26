@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
+import CoachMessages from "@/components/CoachMessages";
 
 export const revalidate = 0;
 
@@ -20,6 +21,46 @@ function timeAgo(dateStr) {
 
 export default async function LockerRoomPage() {
   const supabase = createClient();
+
+  // Get authenticated user
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // Fetch user's messages with coach
+  let userMessages = [];
+  let messageResponses = {};
+
+  if (user?.email) {
+    const { data: messages } = await supabase
+      .from("contact_messages")
+      .select("*")
+      .eq("sender_email", user.email)
+      .order("created_at", { ascending: false });
+
+    if (messages && messages.length > 0) {
+      userMessages = messages;
+
+      // Fetch all responses for these messages
+      const messageIds = messages.map((m) => m.id);
+      const { data: responses } = await supabase
+        .from("message_responses")
+        .select("*")
+        .in("message_id", messageIds)
+        .order("created_at", { ascending: true });
+
+      // Group responses by message_id
+      messageResponses = (responses || []).reduce((acc, resp) => {
+        if (!acc[resp.message_id]) {
+          acc[resp.message_id] = [];
+        }
+        acc[resp.message_id].push(resp);
+        return acc;
+      }, {});
+    }
+  }
+
+  // Fetch forum threads
   const { data: threads } = await supabase
     .from("forum_threads")
     .select("*, forum_replies(count)")
@@ -44,7 +85,22 @@ export default async function LockerRoomPage() {
         </Link>
       </div>
 
-      <div className="mt-8 space-y-3">
+      {/* Coach Messages Section */}
+      <div className="mt-12">
+        <CoachMessages messages={userMessages} responses={messageResponses} />
+      </div>
+
+      {/* Forum Threads Section */}
+      <div className="mt-8">
+        <p className="font-mono text-sm uppercase tracking-[0.2em] text-clay">
+          Public
+        </p>
+        <h2 className="mt-1 font-display text-2xl tracking-wide">
+          Team Topics
+        </h2>
+      </div>
+
+      <div className="mt-6 space-y-3">
         {(threads || []).map((thread) => {
           const replyCount = thread.forum_replies?.[0]?.count || 0;
           return (
