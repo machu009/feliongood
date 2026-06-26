@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { respondToMessage, deleteMessage } from "../actions";
+import { respondToMessage, deleteMessage } from "@/lib/messages/actions";
 
 export default function MessageCard({
   message,
