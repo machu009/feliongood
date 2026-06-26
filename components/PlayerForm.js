@@ -190,7 +190,7 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         <div>
           <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
             Bats / Throws
@@ -213,6 +213,30 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
             className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
           />
         </div>
+        <div>
+          <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+            Weight
+          </label>
+          <input
+            name="weight"
+            placeholder="e.g. 185"
+            defaultValue={initialValues.weight || ""}
+            className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+          />
+        </div>
+      </div>
+
+      <div>
+        <label className="font-mono text-xs uppercase tracking-wide text-ink/70">
+          Honors (optional)
+        </label>
+        <input
+          name="honors"
+          placeholder="e.g. All-State, Academic All-State, All-Region"
+          defaultValue={initialValues.honors || ""}
+          className="mt-1 w-full border-2 border-ink/20 bg-chalk p-3 text-sm focus:border-clay focus:outline-none"
+        />
+        <p className="mt-1 font-mono text-xs text-ink/50">Separate multiple honors with commas</p>
       </div>
 
       <div>

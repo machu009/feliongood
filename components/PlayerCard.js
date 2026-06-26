@@ -1,6 +1,11 @@
 import Image from "next/image";
 
 export default function PlayerCard({ player, program, onEdit, onRemove }) {
+  // Parse honors string into array
+  const honors = player.honors
+    ? player.honors.split(",").map((h) => h.trim()).filter(Boolean)
+    : [];
+
   return (
     <div className="border-2 border-ink/20 bg-chalk p-6">
       <div className="flex items-start justify-between gap-4">
@@ -30,9 +35,36 @@ export default function PlayerCard({ player, program, onEdit, onRemove }) {
               </span>
               <h3 className="font-display text-xl">{player.full_name}</h3>
             </div>
+
+            {/* Honors Badges */}
+            {honors.length > 0 && (
+              <div className="mb-3 flex flex-wrap gap-2">
+                {honors.map((honor, idx) => (
+                  <span
+                    key={idx}
+                    className="inline-block bg-clay/20 text-clay px-2.5 py-1 rounded-full font-mono text-xs font-medium uppercase tracking-wide"
+                  >
+                    {honor}
+                  </span>
+                ))}
+              </div>
+            )}
+
+            {/* Player Details */}
             <div className="space-y-1 font-mono text-xs uppercase tracking-wide text-ink/60">
-              {player.position && <p>{player.position} · CLASS OF {player.grad_year}</p>}
-              {!player.position && <p>CLASS OF {player.grad_year}</p>}
+              {player.position && (
+                <p>
+                  {player.position} · {player.height}
+                  {player.weight && ` · ${player.weight} lbs`}
+                </p>
+              )}
+              {!player.position && (
+                <p>
+                  {player.height}
+                  {player.weight && ` · ${player.weight} lbs`}
+                </p>
+              )}
+              <p>CLASS OF {player.grad_year}</p>
               {program && (
                 <p className="text-clay font-medium">{program.name}</p>
               )}
