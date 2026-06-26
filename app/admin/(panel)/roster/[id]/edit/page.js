@@ -3,6 +3,9 @@ import { createClient } from "@/lib/supabase/server";
 import { updatePlayer } from "../../actions";
 import { notFound } from "next/navigation";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function EditPlayerPage({ params }) {
   const supabase = createClient();
   const { data: player } = await supabase
