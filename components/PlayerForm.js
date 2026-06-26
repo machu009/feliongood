@@ -2,7 +2,7 @@
 
 import { useState, useTransition, useEffect } from "react";
 import Image from "next/image";
-import { uploadProfilePic } from "@/lib/profile-pic/actions";
+import { createClient } from "@/lib/supabase/client";
 
 export default function PlayerForm({ initialValues = {}, action, submitLabel, programs = [] }) {
   const [isPending, startTransition] = useTransition();
@@ -11,6 +11,7 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
   const [uploadingPic, setUploadingPic] = useState(false);
   const [availablePrograms, setAvailablePrograms] = useState(programs);
   const [programsFetched, setProgramsFetched] = useState(false);
+  const supabase = createClient();
 
   // Fetch programs on component mount
   useEffect(() => {
@@ -51,38 +52,43 @@ export default function PlayerForm({ initialValues = {}, action, submitLabel, pr
     setError(null);
 
     try {
-      // Convert file to base64
-      const reader = new FileReader();
-      reader.onload = async (event) => {
-        try {
-          const base64String = event.target?.result;
-          const result = await uploadProfilePic(
-            initialValues.id || "new",
-            base64String,
-            file.name
-          );
+      // Generate unique file name
+      const timestamp = Date.now();
+      const playerId = initialValues.id || "new";
+      const uniqueFileName = `${playerId}_${timestamp}_${file.name}`;
+      const filePath = `${playerId}/${uniqueFileName}`;
 
-          if (result.error) {
-            setError(result.error);
-          } else {
-            setProfilePicUrl(result.url);
-            setError(null);
-          }
-        } catch (err) {
-          setError("Failed to upload image");
-          console.error(err);
-        } finally {
-          setUploadingPic(false);
-        }
-      };
-      reader.onerror = () => {
-        setError("Failed to read file");
+      // Upload directly to Supabase Storage from browser
+      const { data, error: uploadError } = await supabase.storage
+        .from("profilepic")
+        .upload(filePath, file);
+
+      if (uploadError) {
+        console.error("Upload error:", uploadError);
+        setError(`Upload failed: ${uploadError.message}`);
         setUploadingPic(false);
-      };
-      reader.readAsDataURL(file);
+        return;
+      }
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage
+        .from("profilepic")
+        .getPublicUrl(filePath);
+
+      const publicUrl = publicUrlData?.publicUrl;
+
+      if (!publicUrl) {
+        setError("Failed to get public URL");
+        setUploadingPic(false);
+        return;
+      }
+
+      setProfilePicUrl(publicUrl);
+      setError(null);
     } catch (err) {
-      setError("Failed to upload image");
-      console.error(err);
+      console.error("Error uploading image:", err);
+      setError("Failed to upload image: " + err.message);
+    } finally {
       setUploadingPic(false);
     }
   }
