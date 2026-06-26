@@ -12,7 +12,7 @@ export default async function EditStatsPage({ params }) {
   const { data: player } = await supabase
     .from("players")
     .select("*")
-    .eq("id", params.id)
+    .eq("id", params.playerId)
     .single();
 
   if (!player) notFound();
@@ -20,7 +20,7 @@ export default async function EditStatsPage({ params }) {
   const { data: battingStats } = await supabase
     .from("batting_stats")
     .select("*")
-    .eq("player_id", params.id)
+    .eq("player_id", params.playerId)
     .order("season", { ascending: false })
     .limit(1)
     .maybeSingle();
@@ -28,7 +28,7 @@ export default async function EditStatsPage({ params }) {
   const { data: pitchingStats } = await supabase
     .from("pitching_stats")
     .select("*")
-    .eq("player_id", params.id)
+    .eq("player_id", params.playerId)
     .order("season", { ascending: false })
     .limit(1)
     .maybeSingle();
